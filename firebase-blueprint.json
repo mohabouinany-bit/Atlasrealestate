@@ -1,0 +1,54 @@
+{
+  "entities": {
+    "Property": {
+      "title": "Property",
+      "description": "Premium real estate property details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "location": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string" },
+        "bedrooms": { "type": "number" },
+        "bathrooms": { "type": "number" },
+        "areaSqM": { "type": "number" },
+        "coverImage": { "type": "string" },
+        "images": { "type": "array" },
+        "features": { "type": "array" },
+        "featured": { "type": "boolean" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "title", "description", "price", "location", "type", "status", "bedrooms", "bathrooms", "areaSqM", "coverImage", "featured"]
+    },
+    "InquiryMessage": {
+      "title": "InquiryMessage",
+      "description": "User inquiries for specific properties",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "message": { "type": "string" },
+        "propertyId": { "type": "string" },
+        "propertyTitle": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "phone", "message", "propertyId", "propertyTitle", "createdAt", "status"]
+    }
+  },
+  "firestore": {
+    "properties/{propertyId}": {
+      "schema": { "$ref": "#/entities/Property" },
+      "description": "A collection containing available properties."
+    },
+    "messages/{messageId}": {
+      "schema": { "$ref": "#/entities/InquiryMessage" },
+      "description": "A collection of messages/inquiries from potential buyers."
+    }
+  }
+}

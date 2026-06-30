@@ -1,0 +1,8 @@
+{
+  "name": "Atlas real estate",
+  "description": "Sito web elegante per agenzia immobiliare con ricerca immobili, dettagli, modulo contatti e sezione backend amministrativa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
