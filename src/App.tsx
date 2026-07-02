@@ -39,7 +39,11 @@ export default function App() {
         const userEmail = user.email.toLowerCase();
         if (userEmail === 'mohabouinany@gmail.com' || userEmail === 'admin@atlaslabs.it' || userEmail === 'admin@passioneimmobiliare.it') {
           setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
         }
+      } else {
+        setIsAdmin(false);
       }
     });
     return () => unsubscribe();
@@ -481,7 +485,8 @@ export default function App() {
               >
                 <AdminDashboard 
                   isAdmin={isAdmin} 
-                  setIsAdmin={setIsAdmin} 
+                  setIsAdmin={setIsAdmin}
+                  onLogout={handleLogout}
                 />
               </motion.div>
             }/>

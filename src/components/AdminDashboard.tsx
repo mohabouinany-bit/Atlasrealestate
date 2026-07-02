@@ -31,15 +31,16 @@ import {
   deleteMessage 
 } from '../lib/dbService';
 import { compressAndConvertImage } from '../lib/fileHelper';
-import { auth } from '../firebase';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth, db, googleProvider } from '../firebase';
+import { signInWithPopup, signOut, sendPasswordResetEmail } from 'firebase/auth';
 
 interface AdminDashboardProps {
   isAdmin: boolean;
   setIsAdmin: (val: boolean) => void;
+  onLogout: () => Promise<void>;
 }
 
-export default function AdminDashboard({ isAdmin, setIsAdmin }: AdminDashboardProps) {
+export default function AdminDashboard({ isAdmin, setIsAdmin, onLogout }: AdminDashboardProps) {
   // Authentication states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -163,8 +164,7 @@ const [formData, setFormData] = useState<PropertyFormData>({
     setAuthError(null);
     setIsLoggingIn(true);
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, googleProvider);
       if (result.user && result.user.email) {
         const emailLower = result.user.email.toLowerCase();
         if (emailLower === 'mohabouinany@gmail.com' || emailLower === 'admin@atlaslabs.it' || emailLower === 'admin@passioneimmobiliare.it') {
@@ -862,7 +862,7 @@ const [formData, setFormData] = useState<PropertyFormData>({
           <p className="text-stone-400 text-xs">Gestisci il catalogo immobiliare e monitora le richieste dei clienti.</p>
         </div>
         <button
-          onClick={() => setIsAdmin(false)}
+          onClick={onLogout}
           className="bg-stone-800 hover:bg-red-900 text-stone-200 hover:text-white px-4 py-2 rounded-lg text-xs font-semibold tracking-wider uppercase flex items-center gap-2 transition-colors cursor-pointer border border-stone-750 relative z-10"
         >
           <LogOut className="w-4 h-4" />
