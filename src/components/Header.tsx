@@ -3,29 +3,24 @@ import { Home, Building2, HelpCircle, Mail, UserCheck, Menu, X } from 'lucide-re
 import { useTranslation } from '../lib/LanguageContext';
 import { languages } from '../translations';
 import { motion, AnimatePresence } from 'motion/react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface HeaderProps {
-  currentTab: string;
-  setCurrentTab: (tab: string) => void;
   isAdmin: boolean;
   onLogout: () => void;
 }
 
-export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }: HeaderProps) {
+export default function Header({ isAdmin, onLogout }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { language, setLanguage, t } = useTranslation();
+  const location = useLocation();
 
   const menuItems = [
-    { id: 'home', label: t('home'), icon: Home },
-    { id: 'properties', label: t('properties'), icon: Building2 },
-    { id: 'about', label: t('about'), icon: HelpCircle },
-    { id: 'contact', label: t('contact'), icon: Mail },
+    { id: 'home', label: t('home'), icon: Home, path: '/' },
+    { id: 'properties', label: t('properties'), icon: Building2, path: '/properties' },
+    { id: 'about', label: t('about'), icon: HelpCircle, path: '/about' },
+    { id: 'contact', label: t('contact'), icon: Mail, path: '/contact' },
   ];
-
-  const handleNav = (tabId: string) => {
-    setCurrentTab(tabId);
-    setIsOpen(false);
-  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm transition-all duration-300">
@@ -33,8 +28,8 @@ export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }:
         <div className="flex justify-between items-center h-20">
           
           {/* Logo & Brand Name */}
-          <div 
-            onClick={() => handleNav('home')} 
+          <Link 
+            to="/"
             className="flex flex-col cursor-pointer select-none group"
             id="header-brand-logo"
           >
@@ -44,17 +39,17 @@ export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }:
             <span className="font-sans text-[0.65rem] tracking-[0.25em] text-stone-500 font-medium uppercase text-center md:text-left">
               REAL ESTATE • ACQUI TERME
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8" id="desktop-nav-menu">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = currentTab === item.id;
+              const isActive = location.pathname === item.path;
               return (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => handleNav(item.id)}
+                  to={item.path}
                   className={`flex items-center gap-2 text-sm tracking-wider uppercase font-medium transition-all duration-300 relative py-2 ${
                     isActive 
                       ? 'text-stone-950 font-semibold' 
@@ -70,7 +65,7 @@ export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }:
                       className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-700 rounded-full" 
                     />
                   )}
-                </button>
+                </Link>
               );
             })}
           </nav>
@@ -108,16 +103,16 @@ export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }:
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                     ADMIN
                   </span>
-                  <button
-                    onClick={() => handleNav('admin')}
+                  <Link
+                    to="/admin"
                     className={`text-sm tracking-wider uppercase font-medium px-4 py-2 rounded-md transition-all duration-300 ${
-                      currentTab === 'admin'
+                      location.pathname === '/admin'
                         ? 'bg-stone-950 text-white shadow-md'
                         : 'border border-stone-300 text-stone-700 hover:bg-stone-50'
                     }`}
                   >
                     {t('adminPanel')}
-                  </button>
+                  </Link>
                   <button
                     onClick={onLogout}
                     className="text-xs text-stone-500 hover:text-red-600 underline underline-offset-4 transition-colors"
@@ -126,13 +121,13 @@ export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }:
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => handleNav('admin')}
+                <Link
+                  to="/admin"
                   className="text-xs tracking-wider uppercase font-medium text-stone-500 hover:text-amber-800 border-b border-transparent hover:border-amber-800 transition-all duration-300 py-1 flex items-center gap-1.5"
                 >
                   <UserCheck className="w-3.5 h-3.5" />
                   {t('adminArea')}
-                </button>
+                </Link>
               )}
             </div>
 
@@ -194,11 +189,12 @@ export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }:
 
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = currentTab === item.id;
+              const isActive = location.pathname === item.path;
               return (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => handleNav(item.id)}
+                  to={item.path}
+                  onClick={() => setIsOpen(false)}
                   className={`flex items-center gap-3 w-full text-left px-4 py-3 text-sm tracking-wider uppercase font-medium rounded-lg transition-colors ${
                     isActive 
                       ? 'bg-amber-50/50 text-amber-900 font-semibold border-l-4 border-amber-700' 
@@ -207,24 +203,25 @@ export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }:
                 >
                   <Icon className="w-4 h-4 text-stone-500" />
                   {item.label}
-                </button>
+                </Link>
               );
             })}
             
             <div className="border-t border-stone-100 pt-3 mt-2">
               {isAdmin ? (
                 <div className="space-y-2">
-                  <button
-                    onClick={() => handleNav('admin')}
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsOpen(false)}
                     className={`flex items-center gap-3 w-full text-left px-4 py-3 text-sm tracking-wider uppercase font-medium rounded-lg transition-colors ${
-                      currentTab === 'admin' 
+                      location.pathname === '/admin' 
                         ? 'bg-stone-950 text-white font-semibold' 
                         : 'text-stone-700 hover:bg-stone-50'
                     }`}
                   >
                     <UserCheck className="w-4 h-4" />
                     {t('adminPanel')}
-                  </button>
+                  </Link>
                   <button
                     onClick={() => {
                       onLogout();
@@ -236,13 +233,14 @@ export default function Header({ currentTab, setCurrentTab, isAdmin, onLogout }:
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => handleNav('admin')}
+                <Link
+                  to="/admin"
+                  onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm tracking-wider uppercase font-medium text-stone-600 hover:text-amber-800 rounded-lg hover:bg-stone-50 transition-colors"
                 >
                   <UserCheck className="w-4 h-4 text-stone-400" />
                   {t('adminArea')}
-                </button>
+                </Link>
               )}
             </div>
           </motion.div>
