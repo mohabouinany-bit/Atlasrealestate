@@ -12,15 +12,23 @@ import { getProperties, initDb } from './lib/dbService';
 import { useTranslation } from './lib/LanguageContext';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { Building2, Sparkles, Phone, Shield, ArrowRight, Heart, Key, Star, ShieldCheck, MapPin, Loader2, Sparkle } from 'lucide-react';
+import { Building2, ArrowRight, Sparkle, Loader2, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate, Navigate, useParams } from 'react-router-dom';
+
+function PropertyDetailWrapper({ properties }: { properties: Property[] }) {
+  const { id } = useParams<{ id: string }>();
+  const property = properties.find(p => p.id === id);
+
+  if (!property) return <div className="text-center py-20">Immobile non trovato.</div>;
+
+  return <PropertyDetail property={property} />;
+}
 
 export default function App() {
   const { t } = useTranslation();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
@@ -127,7 +135,6 @@ export default function App() {
 
   // Split featured listings for the Home view
   const featuredListings = filteredProperties.filter(p => p.featured);
-  const regularListings = filteredProperties.filter(p => !p.featured);
 
   // Helper check if filters are currently active
   const isFilteringActive = 
@@ -260,7 +267,6 @@ export default function App() {
                           <PropertyCard 
                             key={prop.id} 
                             property={prop} 
-                            onSelect={setSelectedProperty} 
                           />
                         ))}
                       </div>
@@ -287,7 +293,6 @@ export default function App() {
                             <PropertyCard 
                               key={prop.id} 
                               property={prop} 
-                              onSelect={setSelectedProperty} 
                             />
                           ))}
                         </div>
@@ -361,6 +366,9 @@ export default function App() {
 
               </motion.div>
             }/>
+            
+            {/* PROPERTY DETAIL ROUTE */}
+            <Route path="/properties/:id" element={<PropertyDetailWrapper properties={properties} />} />
 
             {/* VIEW B: PROPERTY SEARCH DIRECTORY */}
             <Route path="/properties" element={
@@ -425,7 +433,6 @@ export default function App() {
                         <PropertyCard 
                           key={prop.id} 
                           property={prop} 
-                          onSelect={setSelectedProperty} 
                         />
                       ))}
                     </div>
@@ -559,16 +566,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      {/* SINGLE-VIEW PROPERTY DETAIL MODAL */}
-      <AnimatePresence>
-        {selectedProperty && (
-          <PropertyDetail 
-            property={selectedProperty} 
-            onClose={() => setSelectedProperty(null)} 
-          />
-        )}
-      </AnimatePresence>
 
     </div>
   );
